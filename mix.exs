@@ -1,4 +1,4 @@
-defmodule EmqElixirPlugin.Mixfile do
+defmodule EmqxElixirPlugin.Mixfile do
   use Mix.Project
 
   def project do
@@ -15,7 +15,7 @@ defmodule EmqElixirPlugin.Mixfile do
   def application do
     [
       extra_applications: [:logger],
-      mod: {EmqElixirPlugin, []}
+      mod: {EmqxElixirPlugin, []}
     ]
   end
 
