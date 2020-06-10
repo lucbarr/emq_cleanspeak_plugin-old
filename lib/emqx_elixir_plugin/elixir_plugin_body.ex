@@ -34,7 +34,7 @@ defmodule EmqxElixirPlugin.Body do
         
         #hook_add(:"client.authenticate",  &EmqxElixirPlugin.Body.on_client_authenticate/2, [env])
         #hook_add(:"client.check_acl",     &EmqxElixirPlugin.Body.on_client_check_acl/5,    [env])
-        #hook_add(:"message.publish",      &EmqxElixirPlugin.Body.on_message_publish/2,     [env])
+        hook_add(:"message.publish",      &EmqxElixirPlugin.Body.on_message_publish/2,     [env])
         #hook_add(:"message.deliver",      &EmqxElixirPlugin.Body.on_message_deliver/3,     [env])
         #hook_add(:"message.acked",        &EmqxElixirPlugin.Body.on_message_acked/3,       [env])
         #hook_add(:"client.connected",     &EmqxElixirPlugin.Body.on_client_connected/4,    [env])
@@ -50,7 +50,7 @@ defmodule EmqxElixirPlugin.Body do
 
         #hook_del(:"client.authenticate",  &EmqxElixirPlugin.Body.on_client_authenticate/2 )
         #hook_del(:"client.check_acl",     &EmqxElixirPlugin.Body.on_client_check_acl/5    )
-        #hook_del(:"message.publish",      &EmqxElixirPlugin.Body.on_message_publish/2     )
+        hook_del(:"message.publish",      &EmqxElixirPlugin.Body.on_message_publish/2     )
         #hook_del(:"message.deliver",      &EmqxElixirPlugin.Body.on_message_deliver/3     )
         #hook_del(:"message.acked",        &EmqxElixirPlugin.Body.on_message_acked/3       )
         #hook_del(:"client.connected",     &EmqxElixirPlugin.Body.on_client_connected/4    )
