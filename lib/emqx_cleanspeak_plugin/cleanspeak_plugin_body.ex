@@ -80,10 +80,10 @@ defmodule EmqxCleanspeakPlugin.Body do
     end
 
     def on_message_publish(msg, _env) do
-        IO.inspect(["elixir on_message_publish", msg])
-        
+
         # add your elixir code here
-        msg = message(payload: "potato")
+        msg = message(msg, payload: <<60, 60, 60>>)
+        IO.inspect(["elixir on_message_publish", msg])
         
         {:ok, msg}
     end
