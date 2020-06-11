@@ -15,7 +15,7 @@
 ##--------------------------------------------------------------------
 
 
-defmodule EmqxElixirPlugin.Body do
+defmodule EmqxCleanspeakPlugin.Body do
     
     require Record    
 
@@ -32,33 +32,33 @@ defmodule EmqxElixirPlugin.Body do
     def load(env) do
         # uncomment the hooks that you want, and implement its callback
         
-        #hook_add(:"client.authenticate",  &EmqxElixirPlugin.Body.on_client_authenticate/2, [env])
-        #hook_add(:"client.check_acl",     &EmqxElixirPlugin.Body.on_client_check_acl/5,    [env])
-        hook_add(:"message.publish",      &EmqxElixirPlugin.Body.on_message_publish/2,     [env])
-        #hook_add(:"message.deliver",      &EmqxElixirPlugin.Body.on_message_deliver/3,     [env])
-        #hook_add(:"message.acked",        &EmqxElixirPlugin.Body.on_message_acked/3,       [env])
-        #hook_add(:"client.connected",     &EmqxElixirPlugin.Body.on_client_connected/4,    [env])
-        #hook_add(:"client.subscribe",     &EmqxElixirPlugin.Body.on_client_subscribe/3,    [env])
-        #hook_add(:"client.unsubscribe",   &EmqxElixirPlugin.Body.on_client_unsubscribe/3,  [env])
-        #hook_add(:"client.disconnected",  &EmqxElixirPlugin.Body.on_client_disconnected/3, [env])
-        #hook_add(:"session.subscribed",   &EmqxElixirPlugin.Body.on_session_subscribed/4,  [env])
-        #hook_add(:"session.unsubscribed", &EmqxElixirPlugin.Body.on_session_unsubscribed/4,[env])
+        #hook_add(:"client.authenticate",  &EmqxCleanspeakPlugin.Body.on_client_authenticate/2, [env])
+        #hook_add(:"client.check_acl",     &EmqxCleanspeakPlugin.Body.on_client_check_acl/5,    [env])
+        hook_add(:"message.publish",      &EmqxCleanspeakPlugin.Body.on_message_publish/2,     [env])
+        #hook_add(:"message.deliver",      &EmqxCleanspeakPlugin.Body.on_message_deliver/3,     [env])
+        #hook_add(:"message.acked",        &EmqxCleanspeakPlugin.Body.on_message_acked/3,       [env])
+        #hook_add(:"client.connected",     &EmqxCleanspeakPlugin.Body.on_client_connected/4,    [env])
+        #hook_add(:"client.subscribe",     &EmqxCleanspeakPlugin.Body.on_client_subscribe/3,    [env])
+        #hook_add(:"client.unsubscribe",   &EmqxCleanspeakPlugin.Body.on_client_unsubscribe/3,  [env])
+        #hook_add(:"client.disconnected",  &EmqxCleanspeakPlugin.Body.on_client_disconnected/3, [env])
+        #hook_add(:"session.subscribed",   &EmqxCleanspeakPlugin.Body.on_session_subscribed/4,  [env])
+        #hook_add(:"session.unsubscribed", &EmqxCleanspeakPlugin.Body.on_session_unsubscribed/4,[env])
     end
 
     def unload do
         # uncomment the hooks that you want
 
-        #hook_del(:"client.authenticate",  &EmqxElixirPlugin.Body.on_client_authenticate/2 )
-        #hook_del(:"client.check_acl",     &EmqxElixirPlugin.Body.on_client_check_acl/5    )
-        hook_del(:"message.publish",      &EmqxElixirPlugin.Body.on_message_publish/2     )
-        #hook_del(:"message.deliver",      &EmqxElixirPlugin.Body.on_message_deliver/3     )
-        #hook_del(:"message.acked",        &EmqxElixirPlugin.Body.on_message_acked/3       )
-        #hook_del(:"client.connected",     &EmqxElixirPlugin.Body.on_client_connected/4    )
-        #hook_del(:"client.subscribe",     &EmqxElixirPlugin.Body.on_client_subscribe/3    )
-        #hook_del(:"client.unsubscribe",   &EmqxElixirPlugin.Body.on_client_unsubscribe/3  )
-        #hook_del(:"client.disconnected",  &EmqxElixirPlugin.Body.on_client_disconnected/3 )
-        #hook_del(:"session.subscribed",   &EmqxElixirPlugin.Body.on_session_subscribed/4  )
-        #hook_del(:"session.unsubscribed", &EmqxElixirPlugin.Body.on_session_unsubscribed/4)
+        #hook_del(:"client.authenticate",  &EmqxCleanspeakPlugin.Body.on_client_authenticate/2 )
+        #hook_del(:"client.check_acl",     &EmqxCleanspeakPlugin.Body.on_client_check_acl/5    )
+        hook_del(:"message.publish",      &EmqxCleanspeakPlugin.Body.on_message_publish/2     )
+        #hook_del(:"message.deliver",      &EmqxCleanspeakPlugin.Body.on_message_deliver/3     )
+        #hook_del(:"message.acked",        &EmqxCleanspeakPlugin.Body.on_message_acked/3       )
+        #hook_del(:"client.connected",     &EmqxCleanspeakPlugin.Body.on_client_connected/4    )
+        #hook_del(:"client.subscribe",     &EmqxCleanspeakPlugin.Body.on_client_subscribe/3    )
+        #hook_del(:"client.unsubscribe",   &EmqxCleanspeakPlugin.Body.on_client_unsubscribe/3  )
+        #hook_del(:"client.disconnected",  &EmqxCleanspeakPlugin.Body.on_client_disconnected/3 )
+        #hook_del(:"session.subscribed",   &EmqxCleanspeakPlugin.Body.on_session_subscribed/4  )
+        #hook_del(:"session.unsubscribed", &EmqxCleanspeakPlugin.Body.on_session_unsubscribed/4)
     end
 
     def on_client_authenticate(credentials, _env) do
@@ -79,12 +79,13 @@ defmodule EmqxElixirPlugin.Body do
         {:ok, msg}
     end
 
-    def on_message_publish(message, _env) do
-        IO.inspect(["elixir on_message_publish", message])
+    def on_message_publish(msg, _env) do
+        IO.inspect(["elixir on_message_publish", msg])
         
         # add your elixir code here
+        msg = message(payload: "potato")
         
-        {:ok, message}
+        {:ok, msg}
     end
     
     def on_message_deliver(credentials, message, _env) do

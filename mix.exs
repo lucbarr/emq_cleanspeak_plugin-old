@@ -1,9 +1,9 @@
-defmodule EmqxElixirPlugin.Mixfile do
+defmodule EmqxCleanspeakPlugin.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :emqx_elixir_plugin,
+      app: :emqx_cleanspeak_plugin,
       version: "2.3.2",
       elixir: "~> 1.7",
       start_permanent: Mix.env == :prod,
@@ -15,7 +15,7 @@ defmodule EmqxElixirPlugin.Mixfile do
   def application do
     [
       extra_applications: [:logger],
-      mod: {EmqxElixirPlugin, []}
+      mod: {EmqxCleanspeakPlugin, []}
     ]
   end
 
@@ -23,7 +23,10 @@ defmodule EmqxElixirPlugin.Mixfile do
   defp deps do
     [
       {:cuttlefish, github: "emqx/cuttlefish", tag: "exs-3.0.0", manager: :rebar3, override: true},
-      {:emqx, github: "emqx/emqx", branch: branch()}
+      {:emqx, github: "emqx/emqx", branch: branch()},
+      {:ssl_verify_fun, "1.1.6", override: true},
+      {:httpoison, "~> 1.6"},
+      {:jason, "~> 1.2"}
     ]
   end
 
