@@ -18,6 +18,8 @@
 defmodule EmqxCleanspeakPlugin.Body do
     
     require Record    
+    alias EmqxCleanspeakPlugin.{Filter}
+    require Logger
 
     Record.defrecord(:message, Record.extract(:message, from_lib: "emqx/include/emqx.hrl"))
 
@@ -80,10 +82,12 @@ defmodule EmqxCleanspeakPlugin.Body do
     end
 
     def on_message_publish(msg, _env) do
+        Logger.debug fn -> "on_message_publish: #{msg}" end
 
         # add your elixir code here
-        msg = message(msg, payload: <<60, 60, 60>>)
-        IO.inspect(["elixir on_message_publish", msg])
+        {payload, topic} = {message(msg, :payload), message(msg, :topic)}
+        filtered_message = Filter.filter(payload,topic)
+        msg = message(msg, payload: filtered_message)
         
         {:ok, msg}
     end
