@@ -16,10 +16,11 @@
 
 defmodule EmqxCleanspeakPlugin do
   
-  Module.register_attribute(__MODULE__, :emqx_plugin, accumulate: false, persist: true)
-  Module.put_attribute(__MODULE__, :emqx_plugin, __MODULE__)
+#  Module.register_attribute(__MODULE__, :emqx_plugin, accumulate: false, persist: true)
+#  Module.put_attribute(__MODULE__, :emqx_plugin, __MODULE__)
 
-  use Application
+    use Application
+    require HTTPoison
   
     def start(_type, _args) do
         EmqxCleanspeakPlugin.Body.load([])

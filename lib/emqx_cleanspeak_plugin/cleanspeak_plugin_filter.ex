@@ -1,3 +1,5 @@
+
+
 defmodule EmqxCleanspeakPlugin.Filter do
   require Logger
   require Jason
@@ -35,7 +37,7 @@ defmodule EmqxCleanspeakPlugin.Filter do
       {:ok, response} -> 
         filtered_message = Jason.decode!(response.body)["replacement"]
         {:ok, filtered_message}
-      {_, _response} ->
+      _ ->
         Logger.error fn ->
           "error trying to filter message: #{message}"
         end

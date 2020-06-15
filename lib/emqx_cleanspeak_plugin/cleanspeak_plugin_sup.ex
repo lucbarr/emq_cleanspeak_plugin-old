@@ -25,6 +25,8 @@ defmodule EmqxCleanspeakPlugin.Supervisor do
   def init([]) do
     children = []
 
+    HTTPoison.start()
+
     # supervise/2 is imported from Supervisor.Spec
     supervise(children, strategy: :one_for_one)
   end

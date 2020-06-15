@@ -14,146 +14,103 @@
 ## limitations under the License.
 ##--------------------------------------------------------------------
 
-
 defmodule EmqxCleanspeakPlugin.Body do
-    
-    require Record    
+
     alias EmqxCleanspeakPlugin.{Filter}
     require Logger
 
-    Record.defrecord(:message, Record.extract(:message, from_lib: "emqx/include/emqx.hrl"))
+    require Record
+    import Record, only: [defrecord: 2, extract: 2]
+    defrecord :mqtt_message, extract(:mqtt_message, from: "include/emqttd.hrl")
 
     def hook_add(a, b, c) do
-        :emqx_hooks.add(a, b, c)
+        :emqttd_hooks.add(a, b, c)
     end
     
     def hook_del(a, b) do
-        :emqx_hooks.del(a, b)
+        :emqttd_hooks.delete(a, b)
     end
 
     def load(env) do
-        # uncomment the hooks that you want, and implement its callback
-        
-        #hook_add(:"client.authenticate",  &EmqxCleanspeakPlugin.Body.on_client_authenticate/2, [env])
-        #hook_add(:"client.check_acl",     &EmqxCleanspeakPlugin.Body.on_client_check_acl/5,    [env])
         hook_add(:"message.publish",      &EmqxCleanspeakPlugin.Body.on_message_publish/2,     [env])
-        #hook_add(:"message.deliver",      &EmqxCleanspeakPlugin.Body.on_message_deliver/3,     [env])
-        #hook_add(:"message.acked",        &EmqxCleanspeakPlugin.Body.on_message_acked/3,       [env])
-        #hook_add(:"client.connected",     &EmqxCleanspeakPlugin.Body.on_client_connected/4,    [env])
-        #hook_add(:"client.subscribe",     &EmqxCleanspeakPlugin.Body.on_client_subscribe/3,    [env])
-        #hook_add(:"client.unsubscribe",   &EmqxCleanspeakPlugin.Body.on_client_unsubscribe/3,  [env])
-        #hook_add(:"client.disconnected",  &EmqxCleanspeakPlugin.Body.on_client_disconnected/3, [env])
-        #hook_add(:"session.subscribed",   &EmqxCleanspeakPlugin.Body.on_session_subscribed/4,  [env])
-        #hook_add(:"session.unsubscribed", &EmqxCleanspeakPlugin.Body.on_session_unsubscribed/4,[env])
     end
 
     def unload do
-        # uncomment the hooks that you want
-
-        #hook_del(:"client.authenticate",  &EmqxCleanspeakPlugin.Body.on_client_authenticate/2 )
-        #hook_del(:"client.check_acl",     &EmqxCleanspeakPlugin.Body.on_client_check_acl/5    )
         hook_del(:"message.publish",      &EmqxCleanspeakPlugin.Body.on_message_publish/2     )
-        #hook_del(:"message.deliver",      &EmqxCleanspeakPlugin.Body.on_message_deliver/3     )
-        #hook_del(:"message.acked",        &EmqxCleanspeakPlugin.Body.on_message_acked/3       )
-        #hook_del(:"client.connected",     &EmqxCleanspeakPlugin.Body.on_client_connected/4    )
-        #hook_del(:"client.subscribe",     &EmqxCleanspeakPlugin.Body.on_client_subscribe/3    )
-        #hook_del(:"client.unsubscribe",   &EmqxCleanspeakPlugin.Body.on_client_unsubscribe/3  )
-        #hook_del(:"client.disconnected",  &EmqxCleanspeakPlugin.Body.on_client_disconnected/3 )
-        #hook_del(:"session.subscribed",   &EmqxCleanspeakPlugin.Body.on_session_subscribed/4  )
-        #hook_del(:"session.unsubscribed", &EmqxCleanspeakPlugin.Body.on_session_unsubscribed/4)
-    end
-
-    def on_client_authenticate(credentials, _env) do
-        IO.inspect(["elixir on_client_authenticate", credentials])
-
-        {:stop, Map.put(credentials, :auth_result, :success)}
-    end
-
-    def on_client_check_acl(credentials, pubsub, topic, defult_result, _env) do
-        IO.inspect(["elixir on_client_check_acl", credentials, pubsub, topic, defult_result])
-
-        {:stop, :allow}
     end
     
-    def on_message_publish(msg = message(topic: <<"$SYS/", _ :: binary>>), _env) do
-        # ingore SYS messages
-
-        {:ok, msg}
-    end
-
     def on_message_publish(msg, _env) do
         Logger.debug fn -> "on_message_publish: #{msg}" end
 
-        # add your elixir code here
-        {payload, topic} = {message(msg, :payload), message(msg, :topic)}
+        {payload, topic} = {mqtt_message(msg, :payload), mqtt_message(msg, :topic)}
         filtered_message = Filter.filter(payload,topic)
-        msg = message(msg, payload: filtered_message)
+        msg = mqtt_message(msg, payload: filtered_message)
         
         {:ok, msg}
     end
     
-    def on_message_deliver(credentials, message, _env) do
-        IO.inspect(["elixir on_message_deliver", credentials, message])
-
-        # add your elixir code here
-
-        :ok
-    end
-    
-    def on_message_acked(credentials, message, _env) do
-        IO.inspect(["elixir on_message_acked", credentials, message])
+    def on_message_delivered(clientId, username, message, _env) do
+        IO.inspect(["elixir on_message_delivered", clientId, username, message])
         
         # add your elixir code here
         
         :ok
     end
     
-    def on_client_connected(credentials, connack, attrs, _env) do
-        IO.inspect(["elixir on_client_connected", credentials, connack, attrs])
-
-        # add your elixir code here
-
-        :ok
-    end
-    
-    def on_client_disconnected(credentials, reasoncode, _env) do
-        IO.inspect(["elixir on_client_disconnected", credentials, reasoncode])
+    def on_message_acked(clientId, username, message, _env) do
+        IO.inspect(["elixir on_message_acked", clientId, username, message])
         
         # add your elixir code here
         
         :ok
     end
     
-    def on_client_subscribe(credentials, topictable, _env) do
-        IO.inspect(["elixir on_client_subscribe", credentials, topictable])
+    def on_client_connected(returncode, client, _env) do
+        IO.inspect(["elixir on_client_connected", client, returncode, client])
+        
+        # add your elixir code here
+        
+        :ok
+    end
+    
+    def on_client_disconnected(error, client, _env) do
+        IO.inspect(["elixir on_client_disconnected", error, client])
+        
+        # add your elixir code here
+        
+        :ok
+    end
+    
+    def on_client_subscribe(clientid, username, topictable, _env) do
+        IO.inspect(["elixir on_client_subscribe", clientid, username, topictable])
         
         # add your elixir code here
         
         {:ok, topictable}
     end
     
-    def on_client_unsubscribe(credentials, topictable, _env) do
-        IO.inspect(["elixir on_client_unsubscribe", credentials, topictable])
+    def on_client_unsubscribe(clientid, username, topictable, _env) do
+        IO.inspect(["elixir on_client_unsubscribe", clientid, username, topictable])
         
         # add your elixir code here
         
         {:ok, topictable}
     end
     
-    def on_session_subscribed(credentials, topic, subopts, _env) do
-        IO.inspect(["elixir on_session_subscribed", credentials, topic, subopts])
+    def on_session_subscribed(clientid, username, topicitem, _env) do
+        IO.inspect(["elixir on_session_subscribed", clientid, username, topicitem])
         
         # add your elixir code here
         
-        {:ok, subopts}
+        {:ok, topicitem}
     end
     
-    def on_session_unsubscribed(credentials, topic, opts, _env) do
-        IO.inspect(["elixir on_session_unsubscribed", credentials, topic, opts])
+    def on_session_unsubscribed(clientid, username, topicitem, _env) do
+        IO.inspect(["elixir on_session_unsubscribed", clientid, username, topicitem])
         
         # add your elixir code here
         
-        {:ok, opts}
+        {:ok, topicitem}
     end
 end
 

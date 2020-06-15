@@ -4,6 +4,10 @@ defmodule EmqxCleanspeakPluginTest do
   use ExUnit.Case, async: true
   doctest EmqxCleanspeakPlugin
 
+  require HTTPoison
+
+  HTTPoison.start()
+
   alias EmqxCleanspeakPlugin.{Filter}
 
   test "test no filtered topic" do
