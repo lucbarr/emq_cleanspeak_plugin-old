@@ -4,10 +4,17 @@ defmodule EmqxCleanspeakPlugin.Mixfile do
   def project do
     [
       app: :emq_cleanspeak_plugin,
-      version: "2.3.2",
-      elixir: "~> 1.7",
+      version: "0.1.0",
+      elixir: "~> 1.5",
       start_permanent: Mix.env == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: aliases(),
+    ]
+  end
+
+  def aliases do
+    [
+      test: "test --no-start",
     ]
   end
 
@@ -22,19 +29,18 @@ defmodule EmqxCleanspeakPlugin.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:cuttlefish, github: "emqx/cuttlefish", tag: "exs-3.0.0", manager: :rebar3, override: true},
-      {:emqx, github: "emqx/emqx", branch: branch()},
       {:ssl_verify_fun, "1.1.6", override: true},
-      {:httpoison, "~> 1.6.2"},
-      {:jason, "~> 1.2"}
+      {:httpoison, "~> 1.5.1"},
+      {:jason, "~> 1.2"},
+
+      {:emqttd,
+       github: "emqtt/emqttd",
+       only: [:test],
+       ref: "v2.3-beta.1",
+       manager: :make,
+       optional: true,
+      }
     ]
   end
 
-  defp branch do
-     cur_branch = :os.cmd('git branch | grep -e \'^*\' | cut -d\' \' -f 2') -- '\n'
-     to_string(case :lists.member(cur_branch, ['master', 'develop']) do
-                  true -> cur_branch
-                  false -> 'develop'
-              end)
-  end
 end
